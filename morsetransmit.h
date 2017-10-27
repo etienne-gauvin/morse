@@ -37,8 +37,7 @@ class MorseTransmission {
     void togglePlayPause();
     
   private:
-    bool isPaused = true;
-    bool isPowerOff = true;
+    bool pauseOutputBlink = false;
   
     void turnOff();
     void turnOn();

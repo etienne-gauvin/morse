@@ -27,8 +27,10 @@ void setup() {
   // Init the transmission
   transmission.sentence = & sentence;
   transmission.timeUnit = 250;
-  transmission.dashOutputPin = LED_BUILTIN;
-  transmission.dotOutputPin = LED_BUILTIN;
+  transmission.dashOutputPin = 6;
+  transmission.dotOutputPin = 6;
+  transmission.powerOutputPin = 2;
+  transmission.pauseOutputPin = 3;
   transmission.init();
 }
 

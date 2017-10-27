@@ -8,11 +8,17 @@
  */
 void MorseTransmission::init() {
   this->timeLeft = 0;
-  
-  pinMode(this->dotOutputPin, OUTPUT);
 
+  pinMode(this->dotOutputPin, OUTPUT);
   if (this->dotOutputPin != this->dashOutputPin)
     pinMode(this->dashOutputPin, OUTPUT);
+  
+  if (this->powerOutputPin != NULL)
+    pinMode(this->powerOutputPin, OUTPUT);
+  
+  if (this->pauseOutputPin != NULL)
+    pinMode(this->pauseOutputPin, OUTPUT);
+
 }
 
 /**
@@ -70,7 +76,11 @@ void MorseTransmission::loop(int dt) {
         break;
 
       case TURNED_OFF_STATE:
+        break;
+      
       case PAUSED_STATE:
+        this->pauseOutputBlink = ! this->pauseOutputBlink;
+        this->timeLeft = 300;
         break;
 
       default:
@@ -100,6 +110,10 @@ void MorseTransmission::loop(int dt) {
           
         break;
 
+    }
+
+    if (this->status == PAUSED_STATE) {
+      digitalWrite(this->pauseOutputPin, this->pauseOutputBlink ? HIGH : LOW);
     }
   } else {
     this->timeLeft -= dt;
@@ -157,14 +171,11 @@ void MorseTransmission::turnOn() {
     Serial.println("");
     Serial.println("TURNED_ON_STATE");
     
+    digitalWrite(this->powerOutputPin, HIGH);
+    
     this->currentUnitIndex = 0;
     this->currentCharIndex = 0;
     this->currentWordIndex = 0;
-    
-    digitalWrite(this->dashOutputPin, LOW);
-  
-    if (this->dotOutputPin != this->dashOutputPin)
-      digitalWrite(this->dotOutputPin, LOW);
   }
 }
 
@@ -173,8 +184,10 @@ void MorseTransmission::turnOn() {
  */
 void MorseTransmission::turnOff() {
   this->status = TURNED_OFF_STATE;
-    Serial.println("");
-    Serial.println("TURNED_OFF_STATE");
+  Serial.println("");
+  Serial.println("TURNED_OFF_STATE");
+  
+  digitalWrite(this->powerOutputPin, LOW);
 }
 
 /**
@@ -195,6 +208,8 @@ void MorseTransmission::pause() {
   if (this->status != TURNED_OFF_STATE) {
     this->status = PAUSED_STATE;
     Serial.print(" [PAUSE] ");
+    this->pauseOutputBlink = true;
+    digitalWrite(this->pauseOutputPin, HIGH);
   }
 }
 
@@ -208,6 +223,8 @@ void MorseTransmission::play() {
     this->timeLeft = 0;
     this->currentUnitIndex = 0;
     Serial.print(" [PLAY] ");
+    this->pauseOutputBlink = false;
+    digitalWrite(this->pauseOutputPin, LOW);
   }
 }
 
