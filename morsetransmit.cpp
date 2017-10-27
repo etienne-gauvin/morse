@@ -3,6 +3,9 @@
 #include "morsecharacters.h"
 #include "Arduino.h"
 
+/**
+ * Initialize properties and the pin(s) used for transmission.
+ */
 void MorseTransmission::init() {
   this->timeLeft = 0;
   
@@ -11,7 +14,10 @@ void MorseTransmission::init() {
   if (this->dotOutputPin != this->dashOutputPin)
     pinMode(this->dashOutputPin, OUTPUT);
 }
-  
+
+/**
+ * Non-blocking loop controlling the transmission.
+ */
 void MorseTransmission::loop(int dt) {
   if (this->timeLeft - dt <= 0) {
     MorseWord * currentWord = this->sentence->words[this->currentWordIndex];
@@ -93,7 +99,8 @@ void MorseTransmission::loop(int dt) {
   } else {
     this->timeLeft -= dt;
   }
-
+  
+  // Update pin(s) status
   if (this->status != this->previousStatus) {
     if (this->dotOutputPin == this->dashOutputPin) {
       switch (this->status) {
