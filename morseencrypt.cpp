@@ -3,6 +3,12 @@
 #include "morsecharacters.h"
 #include "Arduino.h"
 
+/**
+ * Creates a new character.
+ * @param {char} character as an ASCII code
+ * @param {int} unitCount the number of units in the parameter units
+ * @param {const char *} units the morse code as a string of . and -
+ */
 MorseCharacter::MorseCharacter(char character, int unitCount, const char * units) {
   this->character = character;
   this->unitCount = unitCount;
@@ -12,6 +18,11 @@ MorseCharacter::MorseCharacter(char character, int unitCount, const char * units
   }
 }
 
+/**
+ * Get a pointer to the MorseCharacter corresponding to a char.
+ * @param {char} character
+ * @return {const MorseCharacter *}
+ */
 const MorseCharacter * MorseCharacter::from(char c) {
   const int numberOfChars = 40;
   const MorseCharacter * rc = getMorseCharacter(39);
@@ -25,6 +36,11 @@ const MorseCharacter * MorseCharacter::from(char c) {
   return rc;
 }
 
+/**
+ * Initialize the MorseSentence from a string.
+ * @param {char *} sentence
+ * @param {int} length
+ */
 void MorseSentence::from(char * sentence, int length) {
   this->words[0] = new MorseWord;
   this->words[0]->charCount = 0;
