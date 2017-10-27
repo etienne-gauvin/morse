@@ -6,13 +6,15 @@
 
 #define TIME_UNIT 250
 
-#define OFF_STATE 0
+#define TURNED_OFF_STATE 0
 #define DOT_STATE 1
 #define DASH_STATE 2
 #define UNIT_SPACE_STATE 3
 #define CHAR_SPACE_STATE 4
 #define WORD_SPACE_STATE 5
 #define SENTENCE_SPACE_STATE 6
+#define PAUSED_STATE 7
+#define TURNED_ON_STATE 8
 
 #define DOT true
 #define DASH false
@@ -21,6 +23,8 @@ class MorseTransmission {
   public:
     int dotOutputPin = 4;
     int dashOutputPin = 5;
+    int powerOutputPin = NULL;
+    int pauseOutputPin = NULL;
     
     int timeUnit = TIME_UNIT;
     
@@ -28,10 +32,22 @@ class MorseTransmission {
     
     void loop(int dt);
     void init();
+
+    void togglePower();
+    void togglePlayPause();
     
   private:
+    bool isPaused = true;
+    bool isPowerOff = true;
+  
+    void turnOff();
+    void turnOn();
+    
+    void pause();
+    void play();
+    
     int previousStatus = NULL;
-    int status = OFF_STATE;
+    int status = TURNED_OFF_STATE;
     
     int timeLeft = 0;
     

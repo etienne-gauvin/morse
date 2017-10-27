@@ -69,7 +69,12 @@ void MorseTransmission::loop(int dt) {
         
         break;
 
+      case TURNED_OFF_STATE:
+      case PAUSED_STATE:
+        break;
+
       default:
+      case TURNED_ON_STATE:
         this->timeLeft = 0;
         Serial.print(this->sentence->words[this->currentWordIndex]->characters[this->currentCharIndex]->character);
         Serial.print(" ");
@@ -126,6 +131,83 @@ void MorseTransmission::loop(int dt) {
           digitalWrite(this->dotOutputPin, LOW);
       }
     }
+
+    this->previousStatus = this->status;
+  }
+}
+
+/**
+ * Toggle the power
+ */
+void MorseTransmission::togglePower() {
+  if (this->status == TURNED_OFF_STATE) {
+    this->turnOn();  
+  } else {
+    this->turnOff();
+  }
+}
+
+/**
+ * Start the transmission
+ * by the start of the sentence.
+ */
+void MorseTransmission::turnOn() {
+  if (this->status == TURNED_OFF_STATE) {
+    this->status = TURNED_ON_STATE;
+    Serial.println("");
+    Serial.println("TURNED_ON_STATE");
+    
+    this->currentUnitIndex = 0;
+    this->currentCharIndex = 0;
+    this->currentWordIndex = 0;
+    
+    digitalWrite(this->dashOutputPin, LOW);
+  
+    if (this->dotOutputPin != this->dashOutputPin)
+      digitalWrite(this->dotOutputPin, LOW);
+  }
+}
+
+/**
+ * Stop completetly the transmission
+ */
+void MorseTransmission::turnOff() {
+  this->status = TURNED_OFF_STATE;
+    Serial.println("");
+    Serial.println("TURNED_OFF_STATE");
+}
+
+/**
+ * Toggle the play/pause state
+ */
+void MorseTransmission::togglePlayPause() {
+  if (this->status == PAUSED_STATE) {
+    this->play();
+  } else {
+    this->pause();
+  }
+}
+
+/**
+ * Pause the transmission
+ */
+void MorseTransmission::pause() {
+  if (this->status != TURNED_OFF_STATE) {
+    this->status = PAUSED_STATE;
+    Serial.print(" [PAUSE] ");
+  }
+}
+
+/**
+ * Play the transmission
+ * from the start of the current character.
+ */
+void MorseTransmission::play() {
+  if (this->status == PAUSED_STATE) {
+    this->status = CHAR_SPACE_STATE;
+    this->timeLeft = 0;
+    this->currentUnitIndex = 0;
+    Serial.print(" [PLAY] ");
   }
 }
 
